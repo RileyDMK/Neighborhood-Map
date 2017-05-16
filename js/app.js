@@ -1,8 +1,10 @@
 $(function(){
 
+  var model = {
 
-  var model = {};
+  };
   var viewModel = {
+
   };
 
   ko.applyBindings(viewModel);
