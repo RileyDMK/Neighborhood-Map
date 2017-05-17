@@ -1,6 +1,13 @@
 
 var model = {
-
+  locations: [
+    {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}},
+    {title: 'The Tulsa Rib Company', location: {lat: 33.8088563, lng: -117.8537571}},
+    {title: 'Nguyen\'s Kitchen', location: {lat: 33.7815967, lng: -117.8692298}},
+    {title: 'Bruxie', location: {lat: 33.7913008, lng: -117.8536319}},
+    {title: 'Lanta Thai Fusion', location: {lat: 33.8088, lng: -117.8459}},
+    {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}}
+  ]
 };
 var viewModel = {
   markers: []
