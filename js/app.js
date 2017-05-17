@@ -23,7 +23,9 @@ var viewModel = {
 ko.applyBindings(viewModel);
 viewModel.getFoodTitles();
 
-function gm_authFailure() { window.alert('failure') };
+// Google Maps functions
+
+function gm_authFailure() { window.alert('Google authentication failure') };
 
 var map;
 function initMap() {
@@ -268,7 +270,7 @@ function initMap() {
       });
     }
     // This function will loop through the markers array and display them all.
-    function showListings() {
+    function showMarkers() {
       var bounds = new google.maps.LatLngBounds();
       // Extend the boundaries of the map for each marker and display the marker
       for (var i = 0; i < viewModel.markers.length; i++) {
@@ -277,8 +279,8 @@ function initMap() {
       }
       map.fitBounds(bounds);
     }
-    showListings();
-    document.getElementById('show-listings').addEventListener('click', showListings);
+    showMarkers();
+    document.getElementById('show-Markers').addEventListener('click', showMarkers);
     document.getElementById('hide-listings').addEventListener('click', hideListings);
   }
 // This function populates the infowindow when the marker is clicked. We'll only allow
@@ -296,7 +298,6 @@ function populateInfoWindow(marker, infowindow) {
     });
   }
 }
-
 
 // This function will loop through the listings and hide them all.
 function hideListings() {

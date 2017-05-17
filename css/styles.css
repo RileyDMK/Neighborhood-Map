@@ -8,17 +8,16 @@ html, body {
   position: absolute;
   right: 0px;
 }
-.container {
+.container-fluid{
   height: 100%;
-  position: relative;
+}
+.row{
+  height:100%;
 }
 .options-box {
-  background: #fff;
-  border-radius: 3px;
+  background: #16161d;
   height: 100%;
   line-height: 35px;
-  padding: 10px 10px 30px 10px;
   text-align: left;
-  width: 340px;
   color: grey;
 }
