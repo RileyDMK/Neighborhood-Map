@@ -6,6 +6,20 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
   </head>
   <body>
+    <div class="container">
+      <div class="options-box">
+        <h1>Placeholder</h1>
+        <div>
+          <input id="show-listings" type="button" value="Show Listings">
+          <input id="hide-listings" type="button" value="Hide Listings">
+        </div>
+        <div>
+          <ul data-bind="foreach: foodList">
+            <li data-bind="text: $data"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <div id="map"></div>
 
 
