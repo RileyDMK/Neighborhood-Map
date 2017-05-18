@@ -10,39 +10,40 @@ var model = {
   ]
 };
 
-var viewModel = {
-  markers: [],
-  foodList: ko.observableArray([]),
-  searchFilter: ko.observableArray(['','Hispanic','Asian','Coffee','Other']),
-  filter: ko.observable(''),
-
-  getFood: function(){
+var viewModel = function(){
+  var self = this;
+  this.markers = [];
+  this.foodList = ko.observableArray([]);
+  model.locations.forEach(function(foodItem){
+    self.foodList.push(foodItem);
+  });
+  this.searchFilter = ko.observableArray(['','Hispanic','Asian','Coffee','Other']);
+  this.filter = ko.observable('');
+  this.filteredList = ko.computed(function(){
+    var filter = this.filter;
+    if(filter === ''){
+      return this.foodList;
+    }
+    else{
+      return ko.utils.arrayFilter(this.foodList, function(food){
+        return food.type === filter;
+      });
+    }
+  },this);
+  /*this.getFood = function(){
     for(var i = 0;i < model.locations.length;i++){
       this.foodList.push(model.locations[i]);
     }
-  },
-  activateMarker: function(food){
+  };*/
+  this.activateMarker = function(food){
     console.log(food.location.lat);
     console.log(food.type);
     bounceMarker(food.title);
-  }
+  };
 };
 
-viewModel.filteredList = ko.computed(function(){
-  var filter = viewModel.filter();
-  if(filter === ''){
-    for(var i = 0;i < viewModel.markers.length;i++){
-      viewModel.markers[i].setVisible(true);
-    }
-    return viewModel.foodList();
-  }
-  else{
-    return ko.utils.arrayFilter(viewModel.foodList(), function(food){
-      return food.type === filter;
-    });
-  }
-},viewModel);
 
+ko.applyBindings(new viewModel());
 
 // Google Maps functions
 
@@ -340,6 +341,3 @@ function hideListings() {
     viewModel.markers[i].setMap(null);
   }
 }
-
-viewModel.getFood();
-ko.applyBindings(viewModel);

@@ -18,8 +18,13 @@
           <div>
             <select data-bind="options: searchFilter, value: filter"></select>
           </div>
-          <div>
+          <!--<div>
             <ul class="list-unstyled" data-bind="foreach: foodList">
+              <li data-bind="text: $data.title, click: $parent.activateMarker"></li>
+            </ul>
+          </div>-->
+          <div>
+            <ul class="list-unstyled" data-bind="foreach: filteredList">
               <li data-bind="text: $data.title, click: $parent.activateMarker"></li>
             </ul>
           </div>
