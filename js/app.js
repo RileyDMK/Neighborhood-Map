@@ -1,17 +1,30 @@
 
 var model = {
   locations: [
-    {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}},
-    {title: 'The Tulsa Rib Company', location: {lat: 33.8088563, lng: -117.8537571}},
-    {title: 'Nguyen\'s Kitchen', location: {lat: 33.7815967, lng: -117.8692298}},
-    {title: 'Bruxie', location: {lat: 33.7913008, lng: -117.8536319}},
-    {title: 'Lanta Thai Fusion', location: {lat: 33.8088, lng: -117.8459}},
-    {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}}
+    {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}, type: 'Coffee'},
+    {title: 'The Tulsa Rib Company', location: {lat: 33.8088563, lng: -117.8537571}, type: 'Other'},
+    {title: 'Nguyen\'s Kitchen', location: {lat: 33.7815967, lng: -117.8692298}, type: 'Asian'},
+    {title: 'Bruxie', location: {lat: 33.7913008, lng: -117.8536319}, type: 'Other'},
+    {title: 'Lanta Thai Fusion', location: {lat: 33.8088, lng: -117.8459}, type: 'Asian'},
+    {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}, type: 'Hispanic'}
   ]
 };
 var viewModel = {
   markers: [],
   foodList: ko.observableArray(),
+  searchFilter: ko.observableArray(['','Hispanic','Asian','Coffee','Other']),
+  filter: ko.observable(''),
+  filteredList: ko.computed(function(){
+    var filter = this.filter;
+    if(filter === ''){
+      return this.foodList;
+    }
+    else{
+      return ko.utils.arrayFilter(this.foodList, function(food){
+        return food.type === filter;
+      });
+    }
+  },this),
   getFood: function(){
     for(var i = 0;i < model.locations.length;i++){
       this.foodList.push(model.locations[i]);
@@ -19,6 +32,7 @@ var viewModel = {
   },
   activateMarker: function(food){
     console.log(food.location.lat);
+    console.log(food.type);
     bounceMarker(food.title);
   }
 };
