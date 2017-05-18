@@ -1,4 +1,4 @@
-
+var map;
 var model = {
   locations: [
     {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}, type: 'Coffee'},
@@ -30,25 +30,42 @@ var viewModel = {
 
 viewModel.filteredList = ko.computed(function(){
   var filter = viewModel.filter();
+  var visMarkers = [];
   if(filter === ''){
     for(var i = 0;i < viewModel.markers.length;i++){
-      viewModel.markers[i].setVisible(true);
+      viewModel.markers[i].setMap(map);
     }
     return viewModel.foodList();
   }
   else{
+    for(var i = 0;i < viewModel.markers.length;i++){
+      for(var j = 0;j<viewModel.foodList().length;j++){
+        if(viewModel.foodList()[j].type === filter){
+          if(viewModel.markers[i].title === viewModel.foodList()[j].title){
+            visMarkers.push(viewModel.markers[i]);
+          }
+          else{
+            viewModel.markers[i].setMap(null);
+          }
+        }
+      }
+    }
+    for(var i = 0;i<visMarkers.length;i++){
+      visMarkers[i].setMap(map);
+    }
     return ko.utils.arrayFilter(viewModel.foodList(), function(food){
+      //console.log(food.title);
       return food.type === filter;
     });
   }
 },viewModel);
-
+console.log(viewModel.filteredList());
 
 // Google Maps functions
 
 function gm_authFailure() { window.alert('Google authentication failure') };
 
-var map;
+
 function initMap() {
   var styles = [
     {
@@ -290,16 +307,7 @@ function initMap() {
       populateInfoWindow(this, largeInfowindow);
     });
   }
-  // This function will loop through the markers array and display them all.
-  function showMarkers() {
-    var bounds = new google.maps.LatLngBounds();
-    // Extend the boundaries of the map for each marker and display the marker
-    for (var i = 0; i < viewModel.markers.length; i++) {
-      viewModel.markers[i].setMap(map);
-      bounds.extend(viewModel.markers[i].position);
-    }
-    map.fitBounds(bounds);
-  }
+
   showMarkers();
   document.getElementById('show-Markers').addEventListener('click', showMarkers);
   document.getElementById('hide-listings').addEventListener('click', hideListings);
@@ -333,7 +341,16 @@ function populateInfoWindow(marker, infowindow) {
     });
   }
 }
-
+// This function will loop through the markers array and display them all.
+function showMarkers() {
+  var bounds = new google.maps.LatLngBounds();
+  // Extend the boundaries of the map for each marker and display the marker
+  for (var i = 0; i < viewModel.markers.length; i++) {
+    viewModel.markers[i].setMap(map);
+    bounds.extend(viewModel.markers[i].position);
+  }
+  map.fitBounds(bounds);
+}
 // This function will loop through the listings and hide them all.
 function hideListings() {
   for (var i = 0; i < viewModel.markers.length; i++) {
