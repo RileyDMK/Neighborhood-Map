@@ -12,16 +12,19 @@ var model = {
 var viewModel = {
   markers: [],
   foodList: ko.observableArray(),
-  getFoodTitles: function(){
-    for(var i = 0; i < model.locations.length;i++){
-      this.foodList.push(model.locations[i].title);
-      console.log(model.locations[i].title);
+  getFood: function(){
+    for(var i = 0;i < model.locations.length;i++){
+      this.foodList.push(model.locations[i]);
     }
+  },
+  activateMarker: function(food){
+    console.log(food.location.lat);
+    bounceMarker(food.title);
   }
 };
 
-ko.applyBindings(viewModel);
-viewModel.getFoodTitles();
+
+
 
 // Google Maps functions
 
@@ -250,39 +253,53 @@ function initMap() {
     styles: styles
   });
   var largeInfowindow = new google.maps.InfoWindow();
-    // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < model.locations.length; i++) {
-      // Get the position from the location array.
-      var position = model.locations[i].location;
-      var title = model.locations[i].title;
-      // Create a marker per location, and put into markers array.
-      var marker = new google.maps.Marker({
-        position: position,
-        title: title,
-        animation: google.maps.Animation.DROP,
-        id: i
-      });
-      // Push the marker to our array of markers.
-      viewModel.markers.push(marker);
-      // Create an onclick event to open an infowindow at each marker.
-      marker.addListener('click', function() {
-        populateInfoWindow(this, largeInfowindow);
-      });
-    }
-    // This function will loop through the markers array and display them all.
-    function showMarkers() {
-      var bounds = new google.maps.LatLngBounds();
-      // Extend the boundaries of the map for each marker and display the marker
-      for (var i = 0; i < viewModel.markers.length; i++) {
-        viewModel.markers[i].setMap(map);
-        bounds.extend(viewModel.markers[i].position);
-      }
-      map.fitBounds(bounds);
-    }
-    showMarkers();
-    document.getElementById('show-Markers').addEventListener('click', showMarkers);
-    document.getElementById('hide-listings').addEventListener('click', hideListings);
+  // The following group uses the location array to create an array of markers on initialize.
+  for (var i = 0; i < model.locations.length; i++) {
+    // Get the position from the location array.
+    var position = model.locations[i].location;
+    var title = model.locations[i].title;
+    // Create a marker per location, and put into markers array.
+    var marker = new google.maps.Marker({
+      position: position,
+      title: title,
+      animation: google.maps.Animation.DROP,
+      id: i
+    });
+    // Push the marker to our array of markers.
+    viewModel.markers.push(marker);
+    // Create an onclick event to open an infowindow at each marker.
+    marker.addListener('click', function() {
+      populateInfoWindow(this, largeInfowindow);
+    });
   }
+  // This function will loop through the markers array and display them all.
+  function showMarkers() {
+    var bounds = new google.maps.LatLngBounds();
+    // Extend the boundaries of the map for each marker and display the marker
+    for (var i = 0; i < viewModel.markers.length; i++) {
+      viewModel.markers[i].setMap(map);
+      bounds.extend(viewModel.markers[i].position);
+    }
+    map.fitBounds(bounds);
+  }
+  showMarkers();
+  document.getElementById('show-Markers').addEventListener('click', showMarkers);
+  document.getElementById('hide-listings').addEventListener('click', hideListings);
+}
+// bounces marker corresponding to foodList item clicked
+function bounceMarker(title){
+  for(var i = 0;i < viewModel.markers.length;i++){
+    if(viewModel.markers[i].title === title){
+      viewModel.markers[i].setAnimation(google.maps.Animation.BOUNCE);
+      // passes current marker into setTimeout to make it work properly
+      (function(marker){
+        setTimeout(function(){
+          marker.setAnimation(null)
+        },1400);
+      })(viewModel.markers[i])
+    }
+  }
+}
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
@@ -305,3 +322,6 @@ function hideListings() {
     viewModel.markers[i].setMap(null);
   }
 }
+
+viewModel.getFood();
+ko.applyBindings(viewModel);

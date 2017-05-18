@@ -17,7 +17,7 @@
           </div>
           <div>
             <ul class="list-unstyled" data-bind="foreach: foodList">
-              <li data-bind="text: $data"></li>
+              <li data-bind="text: $data.title, click: $parent.activateMarker"></li>
             </ul>
           </div>
         </div>
