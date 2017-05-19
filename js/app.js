@@ -1,12 +1,13 @@
 var map;
+var largeInfowindow;
 var model = {
   locations: [
-    {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}, type: 'Coffee'},
-    {title: 'The Tulsa Rib Company', location: {lat: 33.8088563, lng: -117.8537571}, type: 'Other'},
-    {title: 'Nguyen\'s Kitchen', location: {lat: 33.7815967, lng: -117.8692298}, type: 'Asian'},
-    {title: 'Bruxie', location: {lat: 33.7913008, lng: -117.8536319}, type: 'Other'},
-    {title: 'Lanta Thai Fusion', location: {lat: 33.8088, lng: -117.8459}, type: 'Asian'},
-    {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}, type: 'Hispanic'}
+    {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}, type: 'Coffee', venue_id: '4adf6d11f964a520727a21e3'},
+    {title: 'The Tulsa Rib Company', location: {lat: 33.8088563, lng: -117.8537571}, type: 'Other', venue_id: '4b78bac2f964a520b0df2ee3'},
+    {title: 'Nguyen\'s Kitchen', location: {lat: 33.7815967, lng: -117.8692298}, type: 'Asian', venue_id:'564fec23498e64656d8a14b3'},
+    {title: 'Bruxie', location: {lat: 33.7913008, lng: -117.8536319}, type: 'Other', venue_id: '4cd091467561236a13082df3'},
+    {title: 'Lanta Thai Fusion', location: {lat: 33.8088, lng: -117.8459}, type: 'Asian', venue_id: '5004b531e4b03f55b39be094'},
+    {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}, type: 'Hispanic', venue_id: '4b5cdb17f964a520964729e3'}
   ]
 };
 
@@ -21,6 +22,7 @@ var viewModel = {
       this.foodList.push(model.locations[i]);
     }
   },
+  // code for when a marker is activated
   activateMarker: function(food){
     console.log(food.location.lat);
     console.log(food.type);
@@ -38,6 +40,9 @@ viewModel.filteredList = ko.computed(function(){
     return viewModel.foodList();
   }
   else{
+    // iterates over foodList and markers, checking for type and
+    // comparing titles to determine which markers should be shown.
+    // markers are put in an array and added to the map.
     for(var i = 0;i < viewModel.markers.length;i++){
       for(var j = 0;j<viewModel.foodList().length;j++){
         if(viewModel.foodList()[j].type === filter){
@@ -287,17 +292,19 @@ function initMap() {
     zoom: 13,
     styles: styles
   });
-  var largeInfowindow = new google.maps.InfoWindow();
+  largeInfowindow = new google.maps.InfoWindow();
   // The following group uses the location array to create an array of markers on initialize.
   for (var i = 0; i < model.locations.length; i++) {
     // Get the position from the location array.
     var position = model.locations[i].location;
     var title = model.locations[i].title;
+    var venue_id = model.locations[i].venue_id;
     // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       position: position,
       title: title,
       animation: google.maps.Animation.DROP,
+      venue_id: venue_id,
       id: i
     });
     // Push the marker to our array of markers.
@@ -312,12 +319,16 @@ function initMap() {
   document.getElementById('show-Markers').addEventListener('click', showMarkers);
   document.getElementById('hide-listings').addEventListener('click', hideListings);
 }
+
 // bounces marker corresponding to foodList item clicked
 function bounceMarker(title){
+  //var largeInfowindow = new google.maps.InfoWindow();
   for(var i = 0;i < viewModel.markers.length;i++){
     if(viewModel.markers[i].title === title){
       viewModel.markers[i].setAnimation(google.maps.Animation.BOUNCE);
       // passes current marker into setTimeout to make it work properly
+      populateInfoWindow(viewModel.markers[i],largeInfowindow);
+
       (function(marker){
         setTimeout(function(){
           marker.setAnimation(null)
@@ -326,6 +337,11 @@ function bounceMarker(title){
     }
   }
 }
+
+
+//https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=HT3M2LKKTJU1JL1XBWBWPX1VIFTS5IPFVVDN5NF5ODMAFXMF&client_secret=SWOI0NOHXRXJ3H4FNF2BEPTWTIXSQMJ5W3KR3UJVB3Z00MKZ&v=YYYYMMDD
+//https://api.foursquare.com/v2/venues/VENUE_ID/hours
+
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
@@ -333,7 +349,35 @@ function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.title + '</div>');
+    var hours = '';
+    var requestTimeout = setTimeout(function(){
+      window.alert('foursquare request failed.');
+    }, 8000);
+    var foursquareUrl = 'https://api.foursquare.com/v2/venues/'+marker.venue_id+
+    '/hours?client_id=HT3M2LKKTJU1JL1XBWBWPX1VIFTS5IPFVVDN5NF5ODMAFXMF&client_secret=SWOI0NOHXRXJ3H4FNF2BEPTWTIXSQMJ5W3KR3UJVB3Z00MKZ&v=20170501';
+    $.ajax(foursquareUrl,{
+      dataType: "jsonp",
+      success: function(data){
+        console.log(data);
+        console.log(data.response.hours.timeframes);
+        if(!data.response.hours.timeframes){
+          hours = 'No Available Hours';
+          clearTimeout(requestTimeout);
+          infowindow.setContent('<div>' + marker.title +'</br>'+ hours +'</div>');
+        }
+        else{
+          for(var i=0;i<data.response.hours.timeframes.length;i++){
+            var frame = data.response.hours.timeframes[i];
+            console.log(frame.open[0].end);
+            console.log(frame);
+          };
+          hours = data.response.hours.timeframes[0].open[0].end;
+          clearTimeout(requestTimeout);
+          infowindow.setContent('<div>' + marker.title +'</br>'+ hours +'</div>');
+        }
+      }
+    });
+
     infowindow.open(map, marker);
     // Make sure the marker property is cleared if the infowindow is closed.
     infowindow.addListener('closeclick', function() {
@@ -341,6 +385,7 @@ function populateInfoWindow(marker, infowindow) {
     });
   }
 }
+
 // This function will loop through the markers array and display them all.
 function showMarkers() {
   var bounds = new google.maps.LatLngBounds();
