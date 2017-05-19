@@ -1,5 +1,8 @@
+// map global variable
 var map;
+// infowindow global variable so that there is only one active at a time.
 var largeInfowindow;
+// Stored locations of my personal favorites in the area.
 var model = {
   locations: [
     {title: 'Kaffa', location: {lat: 33.7816642, lng: -117.8705335}, type: 'Coffee', venue_id: '4adf6d11f964a520727a21e3'},
@@ -10,10 +13,11 @@ var model = {
     {title: 'Felix Cafe', location: {lat: 33.7875, lng: -117.8535}, type: 'Hispanic', venue_id: '4b5cdb17f964a520964729e3'}
   ]
 };
-
+// viewmodel for knockoutjs to work correctly
 var viewModel = {
   markers: [],
   foodList: ko.observableArray([]),
+  // this is the dropdown filter and gives filter its value
   searchFilter: ko.observableArray(['','Hispanic','Asian','Coffee','Other']),
   filter: ko.observable(''),
 
@@ -24,12 +28,11 @@ var viewModel = {
   },
   // code for when a marker is activated
   activateMarker: function(food){
-    console.log(food.location.lat);
-    console.log(food.type);
     bounceMarker(food.title);
   }
 };
-
+// computes the sidebar list based on the value of the searchFilter dropdown
+// which is passed into filter.
 viewModel.filteredList = ko.computed(function(){
   var filter = viewModel.filter();
   var visMarkers = [];
@@ -59,18 +62,12 @@ viewModel.filteredList = ko.computed(function(){
       visMarkers[i].setMap(map);
     }
     return ko.utils.arrayFilter(viewModel.foodList(), function(food){
-      //console.log(food.title);
       return food.type === filter;
     });
   }
 },viewModel);
-console.log(viewModel.filteredList());
 
 // Google Maps functions
-
-function gm_authFailure() { window.alert('Google authentication failure') };
-
-
 function initMap() {
   var styles = [
     {
@@ -293,7 +290,8 @@ function initMap() {
     styles: styles
   });
   largeInfowindow = new google.maps.InfoWindow();
-  // The following group uses the location array to create an array of markers on initialize.
+  // The following group uses the location array to
+  // create an array of markers on initialize.
   for (var i = 0; i < model.locations.length; i++) {
     // Get the position from the location array.
     var position = model.locations[i].location;
@@ -307,11 +305,12 @@ function initMap() {
       venue_id: venue_id,
       id: i
     });
-    // Push the marker to our array of markers.
+    // Push the marker to array of markers.
     viewModel.markers.push(marker);
     // Create an onclick event to open an infowindow at each marker.
     marker.addListener('click', function() {
-      populateInfoWindow(this, largeInfowindow);
+      //populateInfoWindow(this, largeInfowindow);
+      bounceMarker(this.title);
     });
   }
 
@@ -335,18 +334,14 @@ function bounceMarker(title){
     }
   }
 }
-
-
-//https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=HT3M2LKKTJU1JL1XBWBWPX1VIFTS5IPFVVDN5NF5ODMAFXMF&client_secret=SWOI0NOHXRXJ3H4FNF2BEPTWTIXSQMJ5W3KR3UJVB3Z00MKZ&v=YYYYMMDD
-//https://api.foursquare.com/v2/venues/VENUE_ID/hours
-
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
+// This function populates the infowindow when the marker is clicked.
+// We'll only allow one infowindow which will open at the marker
+// that is clicked, and populate based on that markers position.
 function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     infowindow.marker = marker;
+    // initialize an array for data from foursquare response
     var hours = [];
     // set a timeout to trigger if the ajax request fails
     var requestTimeout = setTimeout(function(){
@@ -357,24 +352,24 @@ function populateInfoWindow(marker, infowindow) {
     $.ajax(foursquareUrl,{
       dataType: "jsonp",
       success: function(data){
-        console.log(data);
-        console.log(data.response.hours.timeframes);
+        // if there are no hours listed, replace content with a message
         if(!data.response.hours.timeframes){
-          hours = 'No Available Hours';
+          hours.push('No Available Hours');
+          // cancels the timeout
           clearTimeout(requestTimeout);
-          infowindow.setContent('<div>' + marker.title +'</br>'+ hours +'</div>');
+          infowindow.setContent('<div>' + marker.title +'</br>'+ hours[0] +'</div>');
         }
         else{
+          // iterate over the foursquare response to acquire daily hours
           for(var i=0;i<data.response.hours.timeframes.length;i++){
             var frame = data.response.hours.timeframes[i];
             for(var j=0;j<frame.days.length;j++){
               hours.push(frame.open[0].start+' - '+frame.open[0].end);
             }
-            console.log(frame.open[0].start);
-            console.log(frame.open[0].end);
           };
-          //hours = data.response.hours.timeframes[0].open[0].end;
+          // cancels the timeout
           clearTimeout(requestTimeout);
+          // populates infowindow with hours from foursquare
           infowindow.setContent('<div>' + marker.title +'</br></br>Hours:</br>Mon '
           + hours[0]+'</br>Tue '
           + hours[1]+'</br>Wed '
@@ -386,7 +381,6 @@ function populateInfoWindow(marker, infowindow) {
         }
       }
     });
-
     infowindow.open(map, marker);
     // Make sure the marker property is cleared if the infowindow is closed.
     infowindow.addListener('closeclick', function() {
@@ -405,12 +399,10 @@ function showMarkers() {
   }
   map.fitBounds(bounds);
 }
-// This function will loop through the listings and hide them all.
-function hideListings() {
-  for (var i = 0; i < viewModel.markers.length; i++) {
-    viewModel.markers[i].setMap(null);
-  }
-}
 
+// callback function for an authentication failure
+function gm_authFailure() { window.alert('Google authentication failure') };
+
+// populate the foodList for filteredList to use
 viewModel.getFood();
 ko.applyBindings(viewModel);
