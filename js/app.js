@@ -316,8 +316,6 @@ function initMap() {
   }
 
   showMarkers();
-  document.getElementById('show-Markers').addEventListener('click', showMarkers);
-  document.getElementById('hide-listings').addEventListener('click', hideListings);
 }
 
 // bounces marker corresponding to foodList item clicked
@@ -349,7 +347,8 @@ function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     infowindow.marker = marker;
-    var hours = '';
+    var hours = [];
+    // set a timeout to trigger if the ajax request fails
     var requestTimeout = setTimeout(function(){
       window.alert('foursquare request failed.');
     }, 8000);
@@ -368,12 +367,22 @@ function populateInfoWindow(marker, infowindow) {
         else{
           for(var i=0;i<data.response.hours.timeframes.length;i++){
             var frame = data.response.hours.timeframes[i];
+            for(var j=0;j<frame.days.length;j++){
+              hours.push(frame.open[0].start+' - '+frame.open[0].end);
+            }
+            console.log(frame.open[0].start);
             console.log(frame.open[0].end);
-            console.log(frame);
           };
-          hours = data.response.hours.timeframes[0].open[0].end;
+          //hours = data.response.hours.timeframes[0].open[0].end;
           clearTimeout(requestTimeout);
-          infowindow.setContent('<div>' + marker.title +'</br>'+ hours +'</div>');
+          infowindow.setContent('<div>' + marker.title +'</br></br>Hours:</br>Mon '
+          + hours[0]+'</br>Tue '
+          + hours[1]+'</br>Wed '
+          + hours[2]+'</br>Thu '
+          + hours[3]+'</br>Fri '
+          + hours[4]+'</br>Sat '
+          + hours[5]+'</br>Sun '
+          + hours[6]+'</div>');
         }
       }
     });
