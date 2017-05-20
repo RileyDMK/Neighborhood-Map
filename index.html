@@ -3,27 +3,37 @@
   <head>
     <meta charset="UTF-8">
     <title>Neighborhood Map</title>
+    <script src="js/libs/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
   </head>
   <body>
-    <div class="container-fluid">
+    <div id="main-container" class="container-fluid">
+      <div class="row collapse-btn-div">
+        <div class="col-md-12">
+          <button id="collapse-btn" type="button" data-toggle="collapse" data-parent="#main-container" data-target="#sidebar">
+            <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
       <div class="row">
-        <div class="col-md-3 options-box">
-          <h1>Good Eats</h1>
+        <div id="sidebar" class="col-xs-3 options-box collapse in">
+          <h1 id="options-title">Good Eats</h1>
           <div>
-            <select data-bind="options: searchFilter, value: filter"></select>
+            <label for="food-filter">Filter Results</label>
+            <select id="food-filter" data-bind="options: searchFilter, value: filter"></select>
           </div>
-          <div>
+          <div id="food-list">
             <ul class="list-unstyled" data-bind="foreach: filteredList">
-              <li data-bind="text: $data.title, click: $parent.activateMarker"></li>
+              <li class="list-item" data-bind="text: $data.title, click: $parent.activateMarker"></li>
             </ul>
           </div>
         </div>
-        <div class="col-md-9" id="map"></div>
+        <div id="map" class='col-xs-12'></div>
       </div>
     </div>
-    <script src="js/libs/jquery.min.js"></script>
+
     <script src="js/libs/knockout-3.4.2.js"></script>
     <script src="js/app.js"></script>
     <script async defer
