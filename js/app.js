@@ -1,3 +1,4 @@
+'use strict';
 // map global variable
 var map;
 // infowindow global variable so that there is only one active at a time.
@@ -328,9 +329,9 @@ function bounceMarker(title){
 
       (function(marker){
         setTimeout(function(){
-          marker.setAnimation(null)
+          marker.setAnimation(null);
         },1400);
-      })(viewModel.markers[i])
+      })(viewModel.markers[i]);
     }
   }
 }
@@ -357,7 +358,8 @@ function populateInfoWindow(marker, infowindow) {
           hours.push('No Available Hours');
           // cancels the timeout
           clearTimeout(requestTimeout);
-          infowindow.setContent('<div>' + marker.title +'</br>'+ hours[0] +'</div>');
+          infowindow.setContent('<div>' + marker.title +'</br>'+ hours[0] +'</div>'+
+            '<a href="https://foursquare.com/v/'+ marker.venue_id +'?ref=HT3M2LKKTJU1JL1XBWBWPX1VIFTS5IPFVVDN5NF5ODMAFXMF">Foursquare</a>');
         }
         else{
           // iterate over the foursquare response to acquire daily hours
@@ -366,18 +368,19 @@ function populateInfoWindow(marker, infowindow) {
             for(var j=0;j<frame.days.length;j++){
               hours.push(frame.open[0].start+' - '+frame.open[0].end);
             }
-          };
+          }
           // cancels the timeout
           clearTimeout(requestTimeout);
           // populates infowindow with hours from foursquare
-          infowindow.setContent('<div>' + marker.title +'</br></br>Hours:</br>Mon '
-          + hours[0]+'</br>Tue '
-          + hours[1]+'</br>Wed '
-          + hours[2]+'</br>Thu '
-          + hours[3]+'</br>Fri '
-          + hours[4]+'</br>Sat '
-          + hours[5]+'</br>Sun '
-          + hours[6]+'</div>');
+          infowindow.setContent('<div>' + marker.title +'</br></br>Hours:</br>Mon '+
+            hours[0]+'</br>Tue '+
+            hours[1]+'</br>Wed '+
+            hours[2]+'</br>Thu '+
+            hours[3]+'</br>Fri '+
+            hours[4]+'</br>Sat '+
+            hours[5]+'</br>Sun '+
+            hours[6]+'</div>'+
+            '<a href="https://foursquare.com/v/'+ marker.venue_id +'?ref=HT3M2LKKTJU1JL1XBWBWPX1VIFTS5IPFVVDN5NF5ODMAFXMF">Foursquare</a>');
         }
       }
     });
@@ -401,7 +404,7 @@ function showMarkers() {
 }
 
 // callback function for an authentication failure
-function gm_authFailure() { window.alert('Google authentication failure') };
+function gm_authFailure() { window.alert('Google authentication failure'); }
 
 // populate the foodList for filteredList to use
 viewModel.getFood();

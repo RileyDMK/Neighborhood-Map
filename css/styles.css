@@ -1,18 +1,23 @@
-html, body {
+html,
+body {
   height: 100%; margin: 0; padding: 0;
 }
+
 .container-fluid{
   height: 100%;
 }
+
 .row{
   height:100%;
   position: relative;
 }
+
 #map{
   height:100%;
   bottom: 0px;
   z-index: 1;
 }
+
 .options-box{
   background: #87888a;
   height:100%;
@@ -23,21 +28,29 @@ html, body {
   z-index: 2;
   min-width: 205px;
 }
-#food-list{
+
+.food-list{
   font-size: 1.1em;
 }
+
 .list-item{
   border-bottom-style: groove;
-
 }
-#options-title{
+
+.options-title{
   margin-top: 0px;
 }
+
 .collapse-btn-div{
   height:5%;
   background: #87888a;
 }
+
 #collapse-btn{
   margin-left: 200px;
   margin-top: 5px;
+}
+
+#food-filter{
+  border: 1px solid;
 }
