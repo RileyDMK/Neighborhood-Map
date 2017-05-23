@@ -7,7 +7,7 @@ To run locally:
 
 You will need to install the [XAMPP](https://www.apachefriends.org/download.html) or something similar to run a local server (I used [MAMP](https://www.mamp.info/en/downloads/)).
 
-Once you have it installed, navigate to XAMPP/htdocs and place the unzipped **Neighborhood_Map** directory into it.
+Once you have it installed, navigate to XAMPP/htdocs and place the **Neighborhood-Map** project folder into it. Make sure to rename the **Neighborhood-Map** project folder to "Neighborhood_Map".
 
 Now open XAMPP and click **Manage Servers**. Then click **Configure** and set the port to "8888".
 
