@@ -1,6 +1,6 @@
 ## Synopsis
 
-This is the Neighborhood Map project for the Udacity Full Stack Web Developer Nanodegree. My app keeps track of some of my favorite places to eat in Orange, CA. The food spot markers show the hours of operation and can be filtered by type.
+This is the Neighborhood Map project for the Udacity Full Stack Web Development Nanodegree. My app keeps track of some of my favorite places to eat in Orange, CA. The food spot markers show the hours of operation and can be filtered by type.
 
 This app uses the Google Maps API and the [Foursquare](https://developer.foursquare.com/) API
 
