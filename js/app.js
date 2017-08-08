@@ -70,6 +70,7 @@ viewModel.filteredList = ko.computed(function(){
 
 // Google Maps functions
 function initMap() {
+  // settings for the map style provided by Google
   var styles = [
     {
       "elementType": "geometry",
